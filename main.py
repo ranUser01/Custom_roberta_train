@@ -24,34 +24,14 @@ def random_seed(seed):
 
 def train(params):
     # initialize experiment
-    logger = init_experiment(params, logger_filename=params.logger_filename)
-    
-    if params.bilstm:
-        # dataloader
-        dataloader_train, dataloader_dev, dataloader_test, vocab = get_dataloader_for_bilstmtagger(params)
-        # bilstm-crf model
-        model = BiLSTMTagger(params, vocab)
-        model.cuda()
-        # trainer
-        trainer = BaseTrainer(params, model)
-    elif params.coach:
-        # dataloader
-        dataloader_train, dataloader_dev, dataloader_test, vocab = get_dataloader_for_coach(params)
-        # coach model
-        binary_tagger = BiLSTMTagger(params, vocab)
-        entity_predictor = EntityPredictor(params)
-        binary_tagger.cuda()
-        entity_predictor.cuda()
-        # trainer
-        trainer = CoachTrainer(params, binary_tagger, entity_predictor)
-    else:
-        # dataloader
-        dataloader_train, dataloader_dev, dataloader_test = get_dataloader(params)
-        # BERT-based NER Tagger
-        model = BertTagger(params)
-        model.cuda()
-        # trainer
-        trainer = BaseTrainer(params, model)
+    logger = init_experiment(params, logger_filename=params.logger_filename):
+    # dataloader
+    dataloader_train, dataloader_dev, dataloader_test = get_dataloader(params)
+    # BERT-based NER Tagger
+    model = BertTagger(params)
+    model.cuda()
+    # trainer
+    trainer = BaseTrainer(params, model)
 
     if params.conll and not params.joint:
         conll_trainloader, conll_devloader, conll_testloader = get_conll2003_dataloader(params.batch_size, params.tgt_dm)
@@ -64,34 +44,12 @@ def train(params):
         logger.info("============== epoch %d ==============" % e)
         
         pbar = tqdm(enumerate(dataloader_train), total=len(dataloader_train))
-        if params.bilstm:
-            loss_list = []
-            for i, (X, lengths, y) in pbar:
-                X, lengths = X.cuda(), lengths.cuda()
-                loss = trainer.train_step_for_bilstm(X, lengths, y)
-                loss_list.append(loss)
-                pbar.set_description("(Epoch {}) LOSS:{:.4f}".format(e, np.mean(loss_list)))
-
-            logger.info("Finish training epoch %d. loss: %.4f" % (e, np.mean(loss_list)))
-
-        elif params.coach:
-            loss_bin_list, loss_entity_list = [], []
-            for i, (X, lengths, y_bin, y_final) in pbar:
-                X, lengths = X.cuda(), lengths.cuda()
-                loss_bin, loss_entityname = trainer.train_step(X, lengths, y_bin, y_final)
-                loss_bin_list.append(loss_bin)
-                loss_entity_list.append(loss_entityname)
-                pbar.set_description("(Epoch {}) LOSS BIN:{:.4f}; LOSS ENTITY:{:.4f}".format(e, np.mean(loss_bin_list), np.mean(loss_entity_list)))
-            
-            logger.info("Finish training epoch %d. loss_bin: %.4f. loss_entity: %.4f" % (e, np.mean(loss_bin_list), np.mean(loss_entity_list)))
-
-        else:
-            loss_list = []
-            for i, (X, y) in pbar:
-                X, y = X.cuda(), y.cuda()
-                loss = trainer.train_step(X, y)
-                loss_list.append(loss)
-                pbar.set_description("(Epoch {}) LOSS:{:.4f}".format(e, np.mean(loss_list)))
+        loss_list = []
+        for i, (X, y) in pbar:
+            X, y = X.cuda(), y.cuda()
+            loss = trainer.train_step(X, y)
+            loss_list.append(loss)
+            pbar.set_description("(Epoch {}) LOSS:{:.4f}".format(e, np.mean(loss_list)))
 
             logger.info("Finish training epoch %d. loss: %.4f" % (e, np.mean(loss_list)))
 

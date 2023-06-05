@@ -31,22 +31,13 @@ class BaseTrainer(object):
         preds = preds.view(preds.size(0)*preds.size(1), preds.size(2))
 
         self.optimizer.zero_grad()
+
         loss = self.loss_fn(preds, y)
         loss.backward()
         self.optimizer.step()
         
         return loss.item()
     
-    def train_step_for_bilstm(self, X, lengths, y):
-        self.model.train()
-        preds = self.model(X)
-        loss = self.model.crf_loss(preds, lengths, y)
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-
-        return loss.item()
-
     def evaluate(self, dataloader, tgt_dm, use_bilstm=False):
         self.model.eval()
 
