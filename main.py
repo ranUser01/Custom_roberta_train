@@ -24,7 +24,7 @@ def random_seed(seed):
 
 def train(params):
     # initialize experiment
-    logger = init_experiment(params, logger_filename=params.logger_filename):
+    logger = init_experiment(params, logger_filename=params.logger_filename)
     # dataloader
     dataloader_train, dataloader_dev, dataloader_test = get_dataloader(params)
     # BERT-based NER Tagger
