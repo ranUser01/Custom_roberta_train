@@ -17,4 +17,4 @@ conda activate 2yp
 
 mkdir $OUTPUT_DIR
 
-bash run_language_modeling.py --output_dir=$OUTPUT_DIR --model_type=bert --model_name_or_path=bert-base-cased --do_train --train_data_file=AI/ai_tasklevel.txt --mlm
+python run_language_modeling.py --output_dir=$OUTPUT_DIR --model_type=bert --model_name_or_path=bert-base-cased --do_train --train_data_file=AI/ai_tasklevel.txt --mlm
