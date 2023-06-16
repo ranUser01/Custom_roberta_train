@@ -237,7 +237,7 @@ def main():
     training_args.save_steps = 10000
     training_args.num_train_epochs = 15
     data_args.mlm_probability = 0.2
-    print(model_args.cache_dir)
+    print([model_args.cache_dir]*10)
     
     if data_args.eval_data_file is None and training_args.do_eval:
         raise ValueError(
