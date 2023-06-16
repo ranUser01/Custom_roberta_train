@@ -31,7 +31,7 @@ from transformers import (
     CONFIG_MAPPING,
     MODEL_WITH_LM_HEAD_MAPPING,
     AutoConfig,
-    AutoModelWithLMHead,
+    AutoModelForMaskedLM,
     AutoTokenizer,
     HfArgumentParser,
     LineByLineTextDataset,
