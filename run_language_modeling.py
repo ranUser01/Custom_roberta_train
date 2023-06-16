@@ -390,4 +390,5 @@ def _mp_fn(index):
 
 
 if __name__ == "__main__":
+    print(cache_dir)
     main()
