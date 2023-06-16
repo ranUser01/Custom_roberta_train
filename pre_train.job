@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#SBATCH --job-name=main  
+#SBATCH --output=%x.%j.out      # Name of output file (%j expands to jobId)
+#SBATCH --cpus-per-task=8        # Schedule 8 cores (includes hyperthreading)
+#SBATCH --gres=gpu:a30:1         # Schedule a GPU, or more with gpu:2 etc
+#SBATCH --time=24:00:00          # Run time (hh:mm:ss) - run for one hour max
+#SBATCH --partition=brown   # Run on either the Red or Brown queue
+#SBATCH --mail-type=END
+
+OUTPUT_DIR=ai_tasklevel
+echo "Running on $(hostname):"
+
+module load Anaconda3/
+eval "$(conda shell.bash hook)"
+conda activate 2yp
+
+mkdir $OUTPUT_DIR
+
+bash run_language_modeling.py --output_dir=$OUTPUT_DIR --model_type=RoBERTa --model_name_or_path=roberta-base --do_train --train_data_file=AI/ai_tasklevel.txt --mlm
